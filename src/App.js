@@ -1,66 +1,72 @@
-import React from "react";
-import Header from "./Header";
-import Contenent from "./Contenent";
-import Course from "./Course";
-import Total from "./Total";
+import { useState, useEffect } from "react"
+import Search from "./Search"
+import Form from "./components/Form"
+import axios from "axios"
+
+
+const existPerson = (x,y) => x.find(person => y.toLowerCase() === person.name.toLowerCase())
 
 const App = () => {
-  const course = [
-    {
-      name: 'Half Stack application development',
-      id: 1,
-      parts: [
-        {
-          name: 'Fundamentals of React',
-          exercises: 10,
-          id: 1
-        },
-        {
-          name: 'Using props to pass data',
-          exercises: 7,
-          id: 2
-        },
-        {
-          name: 'State of a component',
-          exercises: 14,
-          id: 3
-        },
-        {
-          name: 'Redux',
-          exercises: 11,
-          id: 4
-        }
-      ]
-    }, 
-    {
-      name: 'Node.js',
-      id: 2,
-      parts: [
-        {
-          name: 'Routing',
-          exercises: 3,
-          id: 1
-        },
-        {
-          name: 'Middlewares',
-          exercises: 7,
-          id: 2
-        }
-      ]
-    }
-  ]
+  const [persons, setPersons] = useState([])
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [newSearch, setNewSearch] = useState([])
+  const [nameSearch, setNameSearch] = useState('')
+
+  const searchName = (event) => {
+    event.preventDefault()
+    setNameSearch(event.target.value)
+    const findName = persons.filter(person => person.name.toLowerCase().startsWith(event.target.value.toLowerCase()))
+    setNewSearch(newSearch.concat(findName))
+    setNameSearch('')
+  }
+ 
+  const addname = (event) => {
+    console.log(event);
+    event.preventDefault()
+     const newobject = {
+      name: newName,
+      number: newNumber,
+      Date: new Date().toISOString(),
+      id: persons.length + 1,
+     }
+  setPersons(existPerson(persons,newName) ?  window.alert(`${newName} is already added to phonebook`).ubDate() : persons.concat(newobject) ) 
+  setNewName('')
+  setNewNumber('')
+  }
   
+  const handleNewName = (event) => {
+    console.log(event.target.value);
+    setNewName(event.target.value)
+  }
+
+  const handleNewNumber = (event) => {
+    setNewNumber(event.target.value)
+  }
+ 
+  useEffect(()=>{
+    console.log('effect');
+    axios
+    .get('https://restcountries.com/v3.1/all')
+    .then(response => {
+     console.log(response);
+      setPersons(response.data)
+    })
+ },[])
+ console.log('render', persons.length, 'persons')
+
   return (
-   <>
-     <Header />
-     <Contenent course={course[0]} />
-     <Course course={course[0]} />
-     <Total course={course[0]}  />
-     <Contenent course={course[1]} />
-     <Course course={course[1]} />
-     <Total course={course[1]}  />
-   </>
- )
+    <div >
+      <h2>Phonebook</h2>
+      <Search nameSearch={nameSearch} searchName={searchName} newSearch={newSearch} />
+      <h2>Add a new</h2>
+      <Form addname={addname} newName={newName} handleNewName={handleNewName} newNumber={newNumber} handleNewNumber={handleNewNumber} />
+      <h2>Numbers</h2>
+      <div>
+      {persons.map(person => <li key={person.id}>{person.name} {person.number}</li>)}
+      </div>
+    </div>
+  )
 }
 
 export default App
