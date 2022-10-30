@@ -1,0 +1,27 @@
+h1 {
+    color: blue;
+    font-style: italic;
+
+}
+h2 {
+    color: black;
+    font-style: oblique;
+}
+
+.ss {
+    color:black;
+    padding-top: 3px;
+    font-size: 15px;
+  }
+
+.err {
+    color:blue;
+    font-style: italic;
+    border-bottom: 15;
+    border: solid;
+    border-top: 15;
+    border-radius: 5;
+    margin-bottom: auto;
+    border-color: aquamarine;
+
+}

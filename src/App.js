@@ -1,72 +1,28 @@
 import { useState, useEffect } from "react"
-import Search from "./Search"
+import {getData} from "./components/service"
+import Search from "./components/Search"
 import Form from "./components/Form"
-import axios from "axios"
-
-
-const existPerson = (x,y) => x.find(person => y.toLowerCase() === person.name.toLowerCase())
+import List from "./components/ListContact"
 
 const App = () => {
   const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-  const [newSearch, setNewSearch] = useState([])
-  const [nameSearch, setNameSearch] = useState('')
 
-  const searchName = (event) => {
-    event.preventDefault()
-    setNameSearch(event.target.value)
-    const findName = persons.filter(person => person.name.toLowerCase().startsWith(event.target.value.toLowerCase()))
-    setNewSearch(newSearch.concat(findName))
-    setNameSearch('')
-  }
- 
-  const addname = (event) => {
-    console.log(event);
-    event.preventDefault()
-     const newobject = {
-      name: newName,
-      number: newNumber,
-      Date: new Date().toISOString(),
-      id: persons.length + 1,
-     }
-  setPersons(existPerson(persons,newName) ?  window.alert(`${newName} is already added to phonebook`).ubDate() : persons.concat(newobject) ) 
-  setNewName('')
-  setNewNumber('')
-  }
-  
-  const handleNewName = (event) => {
-    console.log(event.target.value);
-    setNewName(event.target.value)
-  }
-
-  const handleNewNumber = (event) => {
-    setNewNumber(event.target.value)
-  }
- 
   useEffect(()=>{
-    console.log('effect');
-    axios
-    .get('https://restcountries.com/v3.1/all')
-    .then(response => {
-     console.log(response);
-      setPersons(response.data)
-    })
+     getData().then(names => setPersons(names))                
  },[])
- console.log('render', persons.length, 'persons')
-
+ console.log(`there is ${persons.length} contacts`);
   return (
     <div >
-      <h2>Phonebook</h2>
-      <Search nameSearch={nameSearch} searchName={searchName} newSearch={newSearch} />
-      <h2>Add a new</h2>
-      <Form addname={addname} newName={newName} handleNewName={handleNewName} newNumber={newNumber} handleNewNumber={handleNewNumber} />
-      <h2>Numbers</h2>
-      <div>
-      {persons.map(person => <li key={person.id}>{person.name} {person.number}</li>)}
-      </div>
+      <Search persons={persons} />
+      <Form persons={persons} setPersons={setPersons}  />
+      <List  persons={persons} setPersons={setPersons} />
     </div>
   )
 }
 
 export default App
+
+/* note1 delete contact function is on ListContact file
+ note2 addname and change functions on Form file
+ note3 handdle functions is also on Form file
+ note4 search is on search file */
